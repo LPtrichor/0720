@@ -9,10 +9,7 @@ import {
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
 
-import { useAccessStore,useChatStore } from "../store";
-import { session_record } from "./chat";
-import {UpdateAccessStore} from "../store/UpdateAccessStore";
-
+import { useChatStore } from "../store";
 
 import Locale from "../locales";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,10 +32,6 @@ export function ChatItem(props: {
   mask: Mask;
 }) {
   const draggableRef = useRef<HTMLDivElement | null>(null);
-  const handleClick = () => {
-    props.onClick;
-    // return <UpdateAccessStore api_key={session_record.mask.api_key} api_url={session_record.mask.api_url} />;
-  };
   useEffect(() => {
     if (props.selected && draggableRef.current) {
       draggableRef.current?.scrollIntoView({
@@ -50,9 +43,9 @@ export function ChatItem(props: {
     <Draggable draggableId={`${props.id}`} index={props.index}>
       {(provided) => (
         <div
-          className={`${styles["chat-item"]} ${props.selected && styles["chat-item-selected"]
-            }`}
-          // onClick={handleClick}
+          className={`${styles["chat-item"]} ${
+            props.selected && styles["chat-item-selected"]
+          }`}
           onClick={props.onClick}
           ref={(ele) => {
             draggableRef.current = ele;
@@ -147,7 +140,7 @@ export function ChatList(props: { narrow?: boolean }) {
                   // const accessStore = useAccessStore();
                   // accessStore.updateToken(session_record.mask.api_key);
                   // accessStore.updateOpenAiUrl(session_record.mask.api_url);
-                  <UpdateAccessStore api_key={session_record.mask.api_key} api_url={session_record.mask.api_url} />;
+                  // <UpdateAccessStore api_key={session_record.mask.api_key} api_url={session_record.mask.api_url} />;
                   navigate(Path.Chat);
                   selectSession(i);
                 }}

@@ -21,8 +21,6 @@ export enum Theme {
 }
 
 export const DEFAULT_CONFIG = {
-  api_key: "123",
-  api_url: "123",
   submitKey: SubmitKey.Enter as SubmitKey,
   avatar: "26f7-fe0f",
   fontSize: 15,
@@ -49,8 +47,7 @@ export const DEFAULT_CONFIG = {
     sendMemory: true,
     historyMessageCount: 4,
     compressMessageLengthThreshold: 1000,
-    api_key: "123",
-    api_url: "123",
+    enableInjectSystemPrompts: true,
     template: DEFAULT_INPUT_TEMPLATE,
   },
 };
@@ -150,7 +147,7 @@ export const useAppConfig = create<ChatConfigStore>()(
     }),
     {
       name: StoreKey.Config,
-      version: 3.5,
+      version: 3.6,
       migrate(persistedState, version) {
         const state = persistedState as ChatConfig;
 
@@ -167,6 +164,10 @@ export const useAppConfig = create<ChatConfigStore>()(
 
         if (version < 3.5) {
           state.customModels = "claude,claude-100k";
+        }
+
+        if (version < 3.6) {
+          state.modelConfig.enableInjectSystemPrompts = true;
         }
 
         return state as any;

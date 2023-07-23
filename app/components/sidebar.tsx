@@ -15,6 +15,7 @@ import PluginIcon from "../icons/plugin.svg";
 import Locale from "../locales";
 
 import { useAppConfig, useChatStore, useAccessStore } from "../store";
+import DragIcon from "../icons/drag.svg";
 
 import {
   MAX_SIDEBAR_WIDTH,
@@ -109,13 +110,15 @@ export function SideBar(props: { className?: string }) {
   const navigate = useNavigate();
   const config = useAppConfig();
   const accessStore = useAccessStore();
+
   useHotKey();
 
   // @ts-ignore
   return (
     <div
-      className={`${styles.sidebar} ${props.className} ${shouldNarrow && styles["narrow-sidebar"]
-        }`}
+      className={`${styles.sidebar} ${props.className} ${
+        shouldNarrow && styles["narrow-sidebar"]
+      }`}
     >
       <div className={styles["sidebar-header"]} data-tauri-drag-region>
         <div className={styles["sidebar-title"]} data-tauri-drag-region>
@@ -151,16 +154,18 @@ export function SideBar(props: { className?: string }) {
             navigate(Path.Home);
           }
           const temp = chatStore.currentSession();
-        if(temp.mask.api_key !== ""){
-          console.log("点击了", temp.mask.api_url);
-          accessStore.updateOpenAiUrl(temp.mask.api_url);
-          accessStore.updateToken(temp.mask.api_key);
-        }
-        else{
-          console.log("当前对话key为空，应该更新全局为空用默认", temp.mask.api_url);
-          accessStore.updateOpenAiUrl("/api/openai/");
-          accessStore.updateToken("");  
-        }
+          if (temp.mask.api_key !== "") {
+            console.log("点击了", temp.mask.api_url);
+            accessStore.updateOpenAiUrl(temp.mask.api_url);
+            accessStore.updateToken(temp.mask.api_key);
+          } else {
+            console.log(
+              "当前对话key为空，应该更新全局为空用默认",
+              temp.mask.api_url,
+            );
+            accessStore.updateOpenAiUrl("/api/openai/");
+            accessStore.updateToken("");
+          }
         }}
       >
         <ChatList narrow={shouldNarrow} />
@@ -215,7 +220,9 @@ export function SideBar(props: { className?: string }) {
       <div
         className={styles["sidebar-drag"]}
         onMouseDown={(e) => onDragMouseDown(e as any)}
-      ></div>
-    </div >
+      >
+        <DragIcon />
+      </div>
+    </div>
   );
 }

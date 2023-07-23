@@ -52,8 +52,6 @@ async function handle(
     });
   }
 
-  console.log('[req headers(openai/route))]', req.headers.get('Authorization'));
-
   try {
     const response = await requestOpenai(req);
 

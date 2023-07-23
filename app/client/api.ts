@@ -81,11 +81,11 @@ export class ClientApi {
     this.llm = new ChatGPTApi();
   }
 
-  config() { }
+  config() {}
 
-  prompts() { }
+  prompts() {}
 
-  masks() { }
+  masks() {}
 
   async share(messages: ChatMessage[], avatarUrl: string | null = null) {
     const msgs = messages
@@ -103,7 +103,7 @@ export class ClientApi {
     // 敬告二开开发者们，为了开源大模型的发展，请不要修改上述消息，此消息用于后续数据清洗使用
     // Please do not modify this message
 
-    console.log("[Share]", msgs);
+    console.log("[Share]", messages, msgs);
     const clientConfig = getClientConfig();
     const proxyUrl = "/sharegpt";
     const rawUrl = "https://sharegpt.com/api/conversations";
@@ -143,28 +143,15 @@ export function getHeaders() {
   const isDefault = session.mask.api_key;
   // use user's api key first
   // 增加判断条件 currentSession的key要不是默认的
-  if (validString(accessStore.token) && (isDefault !== "")) {
+  if (validString(accessStore.token) && isDefault !== "") {
     headers.Authorization = makeBearer(accessStore.token);
-    console.log('[headers.Authorization](api.ts)', headers.Authorization);
+    console.log("[headers.Authorization](api.ts)", headers.Authorization);
   } else if (
     accessStore.enabledAccessControl() &&
     validString(accessStore.accessCode)
   ) {
-    //搞不明白为啥这里获取不到环境变量里面的值G
-    // console.log('[apiKey]',serverConfig.apiKey);
-    console.log('[apiKey]',process.env.OPENAI_API_KEY);
-    if (typeof window !== 'undefined') {
-      // 在浏览器中运行，可以直接访问 process.env 对象
-      console.log('[apiKey在浏览器中运行，可以直接访问 process.env 对象]', process.env.OPENAI_API_KEY);
-    } else {
-      // 不在浏览器中运行，可以使用服务器端环境变量
-      console.log('[apiKey 不在浏览器中运行，可以使用服务器端环境变量]', process.env.OPENAI_API_KEY_SERVER);
-    }
     headers.Authorization = makeBearer(
       ACCESS_CODE_PREFIX + accessStore.accessCode,
-      // serverConfig.apiKey,
-      //提供你默认的key
-      // 'SKK'
     );
   }
 

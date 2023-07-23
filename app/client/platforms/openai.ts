@@ -1,5 +1,6 @@
 import {
   DEFAULT_API_HOST,
+  DEFAULT_MODELS,
   OpenaiPath,
   REQUEST_TIMEOUT_MS,
 } from "@/app/constant";
@@ -23,13 +24,11 @@ export interface OpenAIListModelResponse {
 }
 
 export class ChatGPTApi implements LLMApi {
+  private disableListModels = true;
+
   path(path: string): string {
     let openaiUrl = useAccessStore.getState().openaiUrl;
-    const chatStore = useChatStore.getState();
-    const session = chatStore.currentSession();
-    const isDefault = session.mask.api_url;
-    // if ((openaiUrl.length === 0) || (isDefault == "")) {
-    if ((openaiUrl.length === 0)) {
+    if (openaiUrl.length === 0) {
       openaiUrl = DEFAULT_API_HOST;
     }
     if (openaiUrl.endsWith("/")) {
@@ -77,16 +76,12 @@ export class ChatGPTApi implements LLMApi {
 
     try {
       const chatPath = this.path(OpenaiPath.ChatPath);
-      // const chatPath = 'api/openai';
-      console.log('[getHeaders_]', getHeaders().Authorization);
       const chatPayload = {
         method: "POST",
         body: JSON.stringify(requestPayload),
         signal: controller.signal,
         headers: getHeaders(),
       };
-      console.log('[ChatGPTApi] chatPayload: ', chatPayload);
-      console.log('[ChatGPTApi] chatPath: ', chatPath);
       // make a fetch request
       const requestTimeoutId = setTimeout(
         () => controller.abort(),
@@ -215,7 +210,7 @@ export class ChatGPTApi implements LLMApi {
     ]);
 
     if (used.status === 401) {
-      throw new Error(Locale.Error.Unauthorized);  
+      throw new Error(Locale.Error.Unauthorized);
     }
 
     if (!used.ok || !subs.ok) {
@@ -253,6 +248,10 @@ export class ChatGPTApi implements LLMApi {
   }
 
   async models(): Promise<LLMModel[]> {
+    if (this.disableListModels) {
+      return DEFAULT_MODELS.slice();
+    }
+
     const res = await fetch(this.path(OpenaiPath.ListModelPath), {
       method: "GET",
       headers: {

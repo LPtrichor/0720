@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { useChatStore } from "../store";
-// import { session_record } from "../components/chat";
 
 export const OPENAI_URL = "api.openai.com";
 const DEFAULT_PROTOCOL = "https";
-const PROTOCOL = process.env.PROTOCOL ?? DEFAULT_PROTOCOL;
-const BASE_URL = process.env.BASE_URL ?? OPENAI_URL;
+const PROTOCOL = process.env.PROTOCOL || DEFAULT_PROTOCOL;
+const BASE_URL = process.env.BASE_URL || OPENAI_URL;
 const DISABLE_GPT4 = !!process.env.DISABLE_GPT4;
 
 export async function requestOpenai(req: NextRequest) {
@@ -15,9 +13,6 @@ export async function requestOpenai(req: NextRequest) {
     "/api/openai/",
     "",
   );
-  // const chatStore = useChatStore();
-  // const session = chatStore.currentSession();
-  // console.log('[tmp]', session_record);
   let baseUrl = BASE_URL;
 
   if (!baseUrl.startsWith("http")) {
@@ -39,19 +34,18 @@ export async function requestOpenai(req: NextRequest) {
   const fetchOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
+      "Cache-Control": "no-store",
       Authorization: authValue,
       ...(process.env.OPENAI_ORG_ID && {
         "OpenAI-Organization": process.env.OPENAI_ORG_ID,
       }),
     },
-    cache: "no-store",
     method: req.method,
     body: req.body,
     // @ts-ignore
     duplex: "half",
     signal: controller.signal,
   };
-  console.log('fetchOptions', fetchOptions);
   // #1815 try to refuse gpt4 request
   if (DISABLE_GPT4 && req.body) {
     try {
